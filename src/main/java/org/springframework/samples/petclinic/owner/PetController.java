@@ -17,7 +17,9 @@ package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Objects;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -162,6 +165,10 @@ class PetController {
 	@GetMapping("/pets/{petId}/delete")
 	public String deletePet(@Valid Pet pet, BindingResult result, Owner owner, ModelMap model,
 			RedirectAttributes redirectAttributes) {
+
+		if (Objects.isNull(pet)) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet Not Found");
+		}
 
 		owner.removePet(pet);
 		this.owners.save(owner);
